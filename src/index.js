@@ -1,0 +1,31 @@
+import express from "express";
+import cors from "cors";
+
+import productosRoutes from "./routes/productos.routes.js";
+import movimientosRoutes from "./routes/movimientos.routes.js";
+import categoriasRoutes from "./routes/categorias.routes.js";
+import inventarioRoutes from "./routes/inventario.routes.js";
+
+const app = express();
+const PORT = 3000;
+
+// Middlewares
+app.use(cors());
+app.use(express.json());
+
+// 🔥 Rutas bien definidas (con prefijos claros)
+app.use("/productos", productosRoutes);
+app.use("/movimientos", movimientosRoutes);
+app.use("/categorias", categoriasRoutes);
+
+// ✅ AQUÍ ESTABA EL ERROR
+app.use("/inventario", inventarioRoutes);
+
+// Ruta raíz
+app.get("/", (req, res) => {
+  res.send("API Firemat funcionando 🔥");
+});
+
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+});

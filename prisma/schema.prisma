@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Producto {
+  id          Int          @id @default(autoincrement())
+  nombre      String
+  descripcion String?
+  categoria   String
+  stock       Int
+  minStock    Int          @default(0)
+  precio      Float
+  ubicacion   String?
+  activo      Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  imagen      String?
+  movimientos Movimiento[]
+  criticidad  String       @default("Media")
+}
+
+model Movimiento {
+  id            Int      @id @default(autoincrement())
+  productoId    Int
+  producto      Producto @relation(fields: [productoId], references: [id])
+  tipo          String //entrada | salida | ajuste
+  cantidad      Int
+  stockAnterior Int
+  stockNuevo    Int
+  motivo        String?
+  documento     String?
+  createdAt     DateTime @default(now())
+}
