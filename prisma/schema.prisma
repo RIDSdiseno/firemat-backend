@@ -12,37 +12,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Categoria {
+  id        Int        @id @default(autoincrement())
+  nombre    String
+  productos Producto[]
+}
+
 model Producto {
-  id          Int          @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   nombre      String
   descripcion String?
-  categoria   String
+  
+  categoriaId Int
+  categoria   Categoria @relation(fields: [categoriaId], references: [id])
+
   stock       Int
-  minStock    Int          @default(0)
+  minStock    Int      @default(0)
   precio      Float
   ubicacion   String?
-  activo      Boolean      @default(true)
-  createdAt   DateTime     @default(now())
+  activo      Boolean  @default(true)
+  createdAt   DateTime @default(now())
   imagen      String?
+  criticidad  String   @default("Media")
+
   movimientos Movimiento[]
-  criticidad  String       @default("Media")
-}
-
-model Movimiento {
-  id            Int      @id @default(autoincrement())
-  productoId    Int
-  producto      Producto @relation(fields: [productoId], references: [id])
-  tipo          String //entrada | salida | ajuste
-  cantidad      Int
-  stockAnterior Int
-  stockNuevo    Int
-  motivo        String?
-  documento     String?
-  createdAt     DateTime @default(now())
-}
-
-model Categoria {
-  id Int @id @default(autoincrement())
-  nombre String
-  productos Producto[]
 }
