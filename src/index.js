@@ -14,9 +14,9 @@ app.use(cors());
 app.use(express.json());
 
 // 🔥 Rutas bien definidas (con prefijos claros)
-app.use("/productos", productosRoutes);
-app.use("/movimientos", movimientosRoutes);
-app.use("/categorias", categoriasRoutes);
+app.use("/api/productos", productosRoutes);
+app.use("/api/movimientos", movimientosRoutes);
+app.use("/api/categorias", categoriasRoutes);
 
 // ✅ AQUÍ ESTABA EL ERROR
 app.use("/inventario", inventarioRoutes);
