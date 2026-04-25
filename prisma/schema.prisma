@@ -37,3 +37,16 @@ model Producto {
 
   movimientos Movimiento[]
 }
+
+model Movimiento {
+  id            Int      @id @default(autoincrement())
+  productoId    Int
+  producto      Producto @relation(fields: [productoId], references: [id])
+  tipo          String
+  cantidad      Int
+  stockAnterior Int
+  stockNuevo    Int
+  motivo        String?
+  documento     String?
+  createdAt     DateTime @default(now())
+}
