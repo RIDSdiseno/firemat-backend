@@ -77,7 +77,7 @@ export const crearProducto = async (req, res) => {
   try {
     const {
       nombre,
-      categoria,
+      categoriaId,
       stock,
       minStock,
       precio,
@@ -103,7 +103,7 @@ export const crearProducto = async (req, res) => {
         ? Boolean(activo)
         : true; // 👈 default
 
-    if (!nombre || !categoria || isNaN(stockNum) || isNaN(precioNum)) {
+    if (!nombre || !categoriaId || isNaN(stockNum) || isNaN(precioNum)) {
       return res.status(400).json({
         error: "Faltan campos obligatorios",
       });
@@ -112,7 +112,7 @@ export const crearProducto = async (req, res) => {
     const nuevoProducto = await prisma.producto.create({
       data: {
         nombre,
-        categoria,
+        categoria: Number(categoriaId),
         stock: stockNum,
         minStock: minStockNum,
         precio: precioNum,
