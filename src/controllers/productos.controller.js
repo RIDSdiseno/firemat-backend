@@ -29,25 +29,45 @@ export const getProductos = async (req, res) => {
     }
 
     if (categoria) {
-  filters.push({
-    categoria: {
-      nombre: categoria
+      filters.push({
+        categoria: {
+          nombre: categoria,
+        },
+      });
     }
-  });
-}
 
     const productos = await prisma.producto.findMany({
-  where: filters.length > 0 ? { AND: filters } : {},
-  include: {
-    categoria: true
-  },
-  orderBy: { createdAt: "desc" },
-});
+      where: filters.length > 0 ? { AND: filters } : {},
+      include: {
+        categoria: true,
+      },
+      orderBy: { createdAt: "desc" },
+    });
 
-    res.json(productos);
+    // 🔥 NORMALIZACIÓN CRÍTICA (ARREGLA TU ERROR)
+    const data = productos.map((p) => ({
+      id: p.id,
+      nombre: typeof p.nombre === "string" ? p.nombre : "",
+      stock: Number(p.stock) || 0,
+      minStock: Number(p.minStock) || 0,
+      precio: Number(p.precio) || 0,
+      ubicacion: typeof p.ubicacion === "string" ? p.ubicacion : "",
+      activo: !!p.activo,
+      imagen: typeof p.imagen === "string" ? p.imagen : "",
+      criticidad: p.criticidad || "Media",
+
+      // 🔥 CLAVE: SIEMPRE STRING
+      categoria: p.categoria?.nombre || "Sin categoría",
+      categoriaId: p.categoriaId,
+    }));
+
+    res.json(data);
   } catch (error) {
     console.error("ERROR PRODUCTOS:", error);
-    res.status(500).json({ error: "Error al obtener productos", detalle: error.message });
+    res.status(500).json({
+      error: "Error al obtener productos",
+      detalle: error.message,
+    });
   }
 };
 
