@@ -29,7 +29,8 @@ export const getProductos = async (req, res) => {
     }
 
     if (categoria) {
-      filters.push({ categoria });
+      filters.push({ 
+        categoriaId: Number(categoria) });
     }
 
     const productos = await prisma.producto.findMany({
@@ -112,7 +113,7 @@ export const crearProducto = async (req, res) => {
     const nuevoProducto = await prisma.producto.create({
       data: {
         nombre,
-        categoria: Number(categoriaId),
+        categoriaId: Number(categoriaId),
         stock: stockNum,
         minStock: minStockNum,
         precio: precioNum,
@@ -154,7 +155,7 @@ export const updateProducto = async (req, res) => {
 
     const {
       nombre,
-      categoria,
+      categoriaId,
       stock,
       minStock,
       precio,
@@ -197,7 +198,7 @@ export const updateProducto = async (req, res) => {
       where: { id: Number(id) },
       data: {
         nombre,
-        categoria,
+        categoriaId,
         stock: stockNum,
         minStock: minStockNum,
         precio: precioNum,
