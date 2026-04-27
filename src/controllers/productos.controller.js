@@ -29,14 +29,20 @@ export const getProductos = async (req, res) => {
     }
 
     if (categoria) {
-      filters.push({ 
-        categoriaId: Number(categoria) });
+  filters.push({
+    categoria: {
+      nombre: categoria
     }
+  });
+}
 
     const productos = await prisma.producto.findMany({
-      where: filters.length > 0 ? { AND: filters } : {},
-      orderBy: { createdAt: "desc" },
-    });
+  where: filters.length > 0 ? { AND: filters } : {},
+  include: {
+    categoria: true
+  },
+  orderBy: { createdAt: "desc" },
+});
 
     res.json(productos);
   } catch (error) {
