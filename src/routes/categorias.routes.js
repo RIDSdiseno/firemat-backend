@@ -10,18 +10,16 @@ import { verifyToken } from "../middlewares/auth.js";
 
 const router = Router();
 
-// ✅ GET
-router.get("/", getCategorias);
-
-// ✅ POST (🔥 ESTO FALTABA)
-router.post("/", crearCategoria);
-
-// ✅ PUT
-router.put("/:id", updateCategoria);
-
-// ✅ DELETE (opcional pero recomendado)
-router.delete("/:id", deleteCategoria);
-
+// ✅ GET - Listar categorías (Protegido con token)
 router.get("/", verifyToken, getCategorias);
+
+// ✅ POST - Crear categoría (Protegido con token)
+router.post("/", verifyToken, crearCategoria);
+
+// ✅ PUT - Actualizar (Protegido con token)
+router.put("/:id", verifyToken, updateCategoria);
+
+// ✅ DELETE - Eliminar (Protegido con token)
+router.delete("/:id", verifyToken, deleteCategoria);
 
 export default router;
