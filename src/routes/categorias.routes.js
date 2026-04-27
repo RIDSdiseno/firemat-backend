@@ -6,6 +6,7 @@ import {
   updateCategoria,
   deleteCategoria,
 } from "../controllers/categorias.controller.js";
+import { verifyToken } from "../middlewares/auth.js";
 
 const router = Router();
 
@@ -20,5 +21,7 @@ router.put("/:id", updateCategoria);
 
 // ✅ DELETE (opcional pero recomendado)
 router.delete("/:id", deleteCategoria);
+
+router.get("/", verifyToken, getCategorias);
 
 export default router;
