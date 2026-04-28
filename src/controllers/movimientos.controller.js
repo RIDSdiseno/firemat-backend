@@ -1,4 +1,5 @@
 import { prisma } from "../config/db.js";
+import { movimientoSchema } from "../schemas/movimiento.schema.js";
 
 // GET /movimientos
 export const getMovimientos = async (req, res) => {
@@ -48,52 +49,42 @@ export const getMovimientosByProducto = async (req, res) => {
 };
 
 // POST /movimientos
+import { movimientoSchema } from "../schemas/movimiento.schema.js";
+
 export const crearMovimiento = async (req, res) => {
   try {
-    let { productoId, tipo, cantidad, motivo, documento } = req.body;
+    const parsed = movimientoSchema.safeParse({
+      ...req.body,
+      productoId: Number(req.body.productoId),
+      tipo: req.body.tipo?.toLowerCase(),
+      cantidad: Number(req.body.cantidad)
+    });
 
-    // 🔥 NORMALIZAR
-    tipo = tipo?.toLowerCase();
-
-    if (!productoId || !tipo || cantidad == null) {
+    if (!parsed.success) {
       return res.status(400).json({
-        error: "productoId, tipo y cantidad son obligatorios",
+        error: parsed.error.errors
       });
     }
 
-    if (cantidad < 0) {
-      return res.status(400).json({
-        error: "La cantidad no puede ser negativa",
-      });
-    }
+    const { productoId, tipo, cantidad, motivo, documento } = parsed.data;
 
     // 🔥 TRANSACTION
     const resultado = await prisma.$transaction(async (tx) => {
-      // 1. Buscar producto
       const producto = await tx.producto.findUnique({
-        where: { id: Number(productoId) },
+        where: { id: productoId },
       });
 
-      if (!producto) {
-        throw new Error("NOT_FOUND");
-      }
-
-      // 🔥 VALIDAR ACTIVO
-      if (producto.activo === false) {
-        throw new Error("INACTIVO");
-      }
+      if (!producto) throw new Error("NOT_FOUND");
+      if (producto.activo === false) throw new Error("INACTIVO");
 
       const stockAnterior = producto.stock;
       let stockNuevo = stockAnterior;
       let cantidadFinal = cantidad;
 
-      // 2. Lógica de negocio
       if (tipo === "entrada") {
-        if (cantidad <= 0) throw new Error("CANTIDAD_INVALIDA");
         stockNuevo += cantidad;
 
       } else if (tipo === "salida") {
-        if (cantidad <= 0) throw new Error("CANTIDAD_INVALIDA");
         if (cantidad > stockAnterior) throw new Error("STOCK_INSUFICIENTE");
         stockNuevo -= cantidad;
 
@@ -105,16 +96,14 @@ export const crearMovimiento = async (req, res) => {
         throw new Error("TIPO_INVALIDO");
       }
 
-      // 3. Actualizar producto
       await tx.producto.update({
-        where: { id: Number(productoId) },
+        where: { id: productoId },
         data: { stock: stockNuevo },
       });
 
-      // 4. Crear movimiento
       const movimiento = await tx.movimiento.create({
         data: {
-          productoId: Number(productoId),
+          productoId,
           tipo,
           cantidad: cantidadFinal,
           stockAnterior,
@@ -132,7 +121,6 @@ export const crearMovimiento = async (req, res) => {
   } catch (error) {
     console.log("ERROR MOVIMIENTO:", error.message);
 
-    // 🔥 MANEJO DE ERRORES LIMPIO
     if (error.message === "NOT_FOUND") {
       return res.status(404).json({ error: "Producto no encontrado" });
     }
@@ -147,10 +135,6 @@ export const crearMovimiento = async (req, res) => {
 
     if (error.message === "TIPO_INVALIDO") {
       return res.status(400).json({ error: "Tipo inválido" });
-    }
-
-    if (error.message === "CANTIDAD_INVALIDA") {
-      return res.status(400).json({ error: "Cantidad inválida" });
     }
 
     res.status(500).json({ error: "Error al crear movimiento" });
