@@ -49,7 +49,6 @@ export const getMovimientosByProducto = async (req, res) => {
 };
 
 // POST /movimientos
-import { movimientoSchema } from "../schemas/movimiento.schema.js";
 
 export const crearMovimiento = async (req, res) => {
   try {
