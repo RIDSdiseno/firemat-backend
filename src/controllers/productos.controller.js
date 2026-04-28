@@ -1,4 +1,5 @@
 import { prisma } from "../config/db.js";
+import { productoSchema } from "../schemas/producto.schema.js";
 
 /* =====================================================
    GET /productos
@@ -102,51 +103,34 @@ export const getProducto = async (req, res) => {
 ===================================================== */
 export const crearProducto = async (req, res) => {
   try {
-    const {
-      nombre,
-      categoriaId,
-      stock,
-      minStock,
-      precio,
-      descripcion,
-      ubicacion,
-      activo, // 👈 NUEVO
-      imagen, // 👈 NUEVO
-      criticidad, // 👈 NUEVO
-    } = req.body || {};
+    // 🔥 Validación Zod
+    const parsed = productoSchema.safeParse({
+      ...req.body,
+      stock: Number(req.body.stock),
+      precio: Number(req.body.precio),
+      minStock:
+        req.body.minStock !== undefined && req.body.minStock !== ""
+          ? Number(req.body.minStock)
+          : 0,
+      categoriaId: Number(req.body.categoriaId),
+      activo:
+        req.body.activo !== undefined
+          ? Boolean(req.body.activo)
+          : true
+    });
 
-    const stockNum = Number(stock);
-    const precioNum = Number(precio);
-
-    const minStockNum =
-      minStock !== undefined &&
-      minStock !== null &&
-      minStock !== ""
-        ? Number(minStock)
-        : 0;
-
-    const activoValue =
-      activo !== undefined && activo !== null
-        ? Boolean(activo)
-        : true; // 👈 default
-
-    if (!nombre || !categoriaId || isNaN(stockNum) || isNaN(precioNum)) {
+    if (!parsed.success) {
       return res.status(400).json({
-        error: "Faltan campos obligatorios",
+        error: parsed.error.errors
       });
     }
 
+    const data = parsed.data;
+
+    // 👇 tu lógica original (casi intacta)
     const nuevoProducto = await prisma.producto.create({
       data: {
-        nombre,
-        categoriaId: Number(categoriaId),
-        stock: stockNum,
-        minStock: minStockNum,
-        precio: precioNum,
-        descripcion,
-        ubicacion,
-        activo: activoValue, // 👈 FIX
-        imagen, // 👈 AGREGAR
+        ...data
       },
     });
 
@@ -154,14 +138,15 @@ export const crearProducto = async (req, res) => {
       data: {
         productoId: nuevoProducto.id,
         tipo: "entrada",
-        cantidad: stockNum,
+        cantidad: data.stock,
         stockAnterior: 0,
-        stockNuevo: stockNum,
+        stockNuevo: data.stock,
         motivo: "Creación de producto",
       },
     });
 
     res.status(201).json(nuevoProducto);
+
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: "Error al crear producto" });
