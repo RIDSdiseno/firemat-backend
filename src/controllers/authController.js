@@ -85,4 +85,5 @@ export const login = async (req, res) => {
     console.error("LOGIN ERROR:", error);
     return res.status(500).json({ message: "Error en login" });
   }
+  console.log("JWT_SECRET VERIFY:", process.env.JWT_SECRET);
 };

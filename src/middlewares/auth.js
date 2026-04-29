@@ -24,5 +24,5 @@ export const verifyToken = (req, res, next) => {
     console.error("ERROR JWT:", err.message);
 
     return res.status(403).json({ message: "Token inválido" });
-  }
+  } console.log("JWT_SECRET VERIFY:", process.env.JWT_SECRET);
 };
