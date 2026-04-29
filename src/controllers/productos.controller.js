@@ -1,6 +1,5 @@
 import { prisma } from "../config/db.js";
 import { productoSchema } from "../schemas/producto.schema.js";
-import { crearMovimiento } from "../services/movimiento.service.js";
 
 /* =====================================================
    GET /productos
