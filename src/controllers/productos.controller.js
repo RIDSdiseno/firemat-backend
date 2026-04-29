@@ -326,8 +326,8 @@ export const reservarProducto = async (req, res) => {
           cantidad,
           productoId: Number(id),   // 🔥 FIX IMPORTANTE
           userId: 1,
-          stockAnterior: stockAnterior, // 🔥 AHORA SÍ EXISTE
-          stockNuevo: stockAnterior,     // (opcional pero recomendado)
+          stockAnterior: producto.stock, // 🔥 AHORA SÍ EXISTE
+          stockNuevo: stockAnterior.stock - cantidad,     // (opcional pero recomendado)
 
         }
       });
