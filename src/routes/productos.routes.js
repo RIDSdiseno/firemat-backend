@@ -2,7 +2,7 @@ import { Router } from "express";
 import {
   getProductos,
   getProducto,
-  crearProducto, // <-- Aquí está definido como 'crearProducto'
+  crearProducto,
   updateProducto,
   deleteProducto,
   reservarProducto,
@@ -12,19 +12,16 @@ import { verifyToken } from "../middlewares/auth.js";
 
 const router = Router();
 
-// 🔥 CRUD Productos
-router.get("/", getProductos); 
+// 🔐 Todas protegidas (recomendado)
 router.get("/", verifyToken, getProductos);
+router.get("/:id", verifyToken, getProducto);
 
-// ANTES: router.post("/", verifyToken, createProducto); 
-// AHORA (Corregido):
-router.post("/", verifyToken, crearProducto); 
+router.post("/", verifyToken, crearProducto);
+router.put("/:id", verifyToken, updateProducto);
+router.delete("/:id", verifyToken, deleteProducto);
 
-router.get("/:id", getProducto);
-router.post("/", crearProducto); 
-router.put("/:id", updateProducto);
-router.delete("/:id", deleteProducto);
+// 🔥 NUEVAS FUNCIONALIDADES
 router.post("/:id/reservar", verifyToken, reservarProducto);
 router.post("/:id/confirmar", verifyToken, confirmarSalida);
 
-export default router; 
+export default router;
