@@ -298,14 +298,15 @@ export const reservarProducto = async (req, res) => {
       const producto = await tx.producto.findUnique({
         where: { id: Number(id) }
       });
+      const stockAnterior = producto.stock;
 
       if (!producto) {
         throw new Error("Producto no encontrado");
       }
-
-      const stockReservado = producto.stockReservado || 0;
+      
       const disponible = producto.stock - stockReservado;
-
+      const stockReservado = producto.stockReservado || 0;
+      
       if (cantidad > disponible) {
         throw new Error("No hay stock disponible suficiente");
       }
@@ -323,9 +324,10 @@ export const reservarProducto = async (req, res) => {
         data: {
           tipo: "RESERVA",
           cantidad,
-          productoId: id,
+          productoId: Number(id),   // 🔥 FIX IMPORTANTE
           userId: 1,
-          stockAnterior,
+          stockAnterior: stockAnterior, // 🔥 AHORA SÍ EXISTE
+          stockNuevo: stockAnterior,     // (opcional pero recomendado)
 
         }
       });
