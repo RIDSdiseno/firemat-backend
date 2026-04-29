@@ -324,7 +324,7 @@ export const reservarProducto = async (req, res) => {
           tipo: "RESERVA",
           cantidad,
           productoId: id,
-          userId: req.user.userId
+          userId: 1
         }
       });
 
@@ -383,7 +383,7 @@ export const confirmarSalida = async (req, res) => {
           tipo: "SALIDA",
           cantidad,
           productoId: id,
-          userId: req.user.userId
+          userId: 1
         }
       });
 
