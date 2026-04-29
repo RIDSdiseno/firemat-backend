@@ -27,6 +27,7 @@ model Producto {
   categoria   Categoria @relation(fields: [categoriaId], references: [id])
 
   stock       Int
+  stockReservado  Int  @default(0)
   minStock    Int      @default(0)
   precio      Float
   ubicacion   String?
