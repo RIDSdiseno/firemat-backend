@@ -285,50 +285,46 @@ export const reservarProducto = async (req, res) => {
     const id = Number(req.params.id);
     const { cantidad } = req.body;
 
-    // 🔒 1. Validaciones básicas
     if (!cantidad || cantidad <= 0) {
       return res.status(400).json({
         message: "Cantidad inválida"
       });
     }
 
-    // 🔥 2. Transacción (CLAVE)
     const resultado = await prisma.$transaction(async (tx) => {
 
       const producto = await tx.producto.findUnique({
-        where: { id: Number(id) }
+        where: { id }
       });
-      const stockAnterior = producto.stock;
 
       if (!producto) {
         throw new Error("Producto no encontrado");
       }
-      
-      const disponible = producto.stock - stockReservado;
+
       const stockReservado = producto.stockReservado || 0;
-      
+      const disponible = producto.stock - stockReservado;
+
       if (cantidad > disponible) {
         throw new Error("No hay stock disponible suficiente");
       }
 
-      // 🔥 3. Actualizar reserva
+      const stockAnterior = producto.stock;
+
       const actualizado = await tx.producto.update({
-        where: { id: Number(id) },
+        where: { id },
         data: {
           stockReservado: stockReservado + cantidad
         }
       });
 
-      // 🔥 4. Crear movimiento (IMPORTANTE)
       await tx.movimiento.create({
         data: {
           tipo: "RESERVA",
           cantidad,
-          productoId: Number(id),   // 🔥 FIX IMPORTANTE
+          productoId: id,
           userId: 1,
-          stockAnterior: producto.stock, // 🔥 AHORA SÍ EXISTE
-          stockNuevo: stockAnterior.stock - cantidad,     // (opcional pero recomendado)
-
+          stockAnterior: stockAnterior,
+          stockNuevo: stockAnterior - cantidad
         }
       });
 
@@ -338,7 +334,7 @@ export const reservarProducto = async (req, res) => {
     res.json(resultado);
 
   } catch (error) {
-    console.error("ERROR RESERVA:", error); // 🔥 IMPORTANTE
+    console.error("ERROR RESERVA:", error);
     res.status(500).json({
       message: error.message || "Error al reservar producto"
     });
