@@ -6,6 +6,7 @@ import {
   updateProducto,
   deleteProducto,
   reservarProducto,
+  confirmarSalida,
 } from "../controllers/productos.controller.js";
 import { verifyToken } from "../middlewares/auth.js";
 
@@ -23,6 +24,7 @@ router.get("/:id", getProducto);
 router.post("/", crearProducto); 
 router.put("/:id", updateProducto);
 router.delete("/:id", deleteProducto);
-router.post("/productos/:id/reservar", verifyToken, reservarProducto);
+router.post("/:id/reservar", verifyToken, reservarProducto);
+router.post("/:id/confirmar", verifyToken, confirmarSalida);
 
 export default router; 

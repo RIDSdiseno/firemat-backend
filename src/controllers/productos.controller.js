@@ -339,3 +339,61 @@ export const reservarProducto = async (req, res) => {
     });
   }
 };
+
+export const confirmarSalida = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cantidad } = req.body;
+
+    if (!cantidad || cantidad <= 0) {
+      return res.status(400).json({
+        message: "Cantidad inválida"
+      });
+    }
+
+    const resultado = await prisma.$transaction(async (tx) => {
+
+      const producto = await tx.producto.findUnique({
+        where: { id }
+      });
+
+      if (!producto) {
+        throw new Error("Producto no encontrado");
+      }
+
+      const stockReservado = producto.stockReservado || 0;
+
+      if (cantidad > stockReservado) {
+        throw new Error("No hay suficiente stock reservado");
+      }
+
+      // 🔥 1. Actualizar stock real
+      const actualizado = await tx.producto.update({
+        where: { id },
+        data: {
+          stock: producto.stock - cantidad,
+          stockReservado: stockReservado - cantidad
+        }
+      });
+
+      // 🔥 2. Movimiento
+      await tx.movimiento.create({
+        data: {
+          tipo: "SALIDA",
+          cantidad,
+          productoId: id,
+          userId: req.user.userId
+        }
+      });
+
+      return actualizado;
+    });
+
+    res.json(resultado);
+
+  } catch (error) {
+    res.status(500).json({
+      message: error.message || "Error al confirmar salida"
+    });
+  }
+};
