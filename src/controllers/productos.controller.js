@@ -286,35 +286,57 @@ export const reservarProducto = async (req, res) => {
     const { id } = req.params;
     const { cantidad } = req.body;
 
-    // 🔥 1. Buscar producto
-    const producto = await prisma.producto.findUnique({
-      where: { id }
-    });
-
-    if (!producto) {
-      return res.status(404).json({ message: "Producto no encontrado" });
-    }
-
-    const disponible = producto.stock - producto.stockReservado;
-
-    if (cantidad > disponible) {
+    // 🔒 1. Validaciones básicas
+    if (!cantidad || cantidad <= 0) {
       return res.status(400).json({
-        message: "No hay stock disponible suficiente"
+        message: "Cantidad inválida"
       });
     }
 
-    // 🔥 2. Actualizar reserva
-    const actualizado = await prisma.producto.update({
-      where: { id },
-      data: {
-        stockReservado: producto.stockReservado + cantidad
+    // 🔥 2. Transacción (CLAVE)
+    const resultado = await prisma.$transaction(async (tx) => {
+
+      const producto = await tx.producto.findUnique({
+        where: { id }
+      });
+
+      if (!producto) {
+        throw new Error("Producto no encontrado");
       }
+
+      const stockReservado = producto.stockReservado || 0;
+      const disponible = producto.stock - stockReservado;
+
+      if (cantidad > disponible) {
+        throw new Error("No hay stock disponible suficiente");
+      }
+
+      // 🔥 3. Actualizar reserva
+      const actualizado = await tx.producto.update({
+        where: { id },
+        data: {
+          stockReservado: stockReservado + cantidad
+        }
+      });
+
+      // 🔥 4. Crear movimiento (IMPORTANTE)
+      await tx.movimiento.create({
+        data: {
+          tipo: "RESERVA",
+          cantidad,
+          productoId: id,
+          userId: req.user.userId
+        }
+      });
+
+      return actualizado;
     });
 
-
-    res.json(actualizado);
+    res.json(resultado);
 
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.status(500).json({
+      message: error.message || "Error al reservar producto"
+    });
   }
 };
