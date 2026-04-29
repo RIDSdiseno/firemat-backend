@@ -6,7 +6,7 @@ import {
   updateProducto,
   deleteProducto,
   reservarProducto,
-  confirmarSalida,
+  confirmarSalida
 } from "../controllers/productos.controller.js";
 import { verifyToken } from "../middlewares/auth.js";
 
