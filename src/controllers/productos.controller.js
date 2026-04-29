@@ -311,15 +311,6 @@ export const reservarProducto = async (req, res) => {
       }
     });
 
-    // 🔥 3. CREAR MOVIMIENTO (AQUÍ VA LO TUYO)
-    await prisma.movimiento.create({
-      data: {
-        tipo: "RESERVA",
-        cantidad,
-        productoId: id,
-        userId: req.user.userId
-      }
-    });
 
     res.json(actualizado);
 
