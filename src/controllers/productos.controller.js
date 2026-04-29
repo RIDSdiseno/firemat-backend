@@ -1,5 +1,6 @@
 import { prisma } from "../config/db.js";
 import { productoSchema } from "../schemas/producto.schema.js";
+import { crearMovimiento } from "../services/movimiento.service.js";
 
 /* =====================================================
    GET /productos
@@ -277,5 +278,52 @@ export const deleteProducto = async (req, res) => {
   } catch (error) {
     console.log("ERROR DELETE:", error);
     res.status(500).json({ error: "Error al eliminar producto" });
+  }
+};
+
+export const reservarProducto = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { cantidad } = req.body;
+
+    // 🔥 1. Buscar producto
+    const producto = await prisma.producto.findUnique({
+      where: { id }
+    });
+
+    if (!producto) {
+      return res.status(404).json({ message: "Producto no encontrado" });
+    }
+
+    const disponible = producto.stock - producto.stockReservado;
+
+    if (cantidad > disponible) {
+      return res.status(400).json({
+        message: "No hay stock disponible suficiente"
+      });
+    }
+
+    // 🔥 2. Actualizar reserva
+    const actualizado = await prisma.producto.update({
+      where: { id },
+      data: {
+        stockReservado: producto.stockReservado + cantidad
+      }
+    });
+
+    // 🔥 3. CREAR MOVIMIENTO (AQUÍ VA LO TUYO)
+    await prisma.movimiento.create({
+      data: {
+        tipo: "RESERVA",
+        cantidad,
+        productoId: id,
+        userId: req.user.userId
+      }
+    });
+
+    res.json(actualizado);
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
