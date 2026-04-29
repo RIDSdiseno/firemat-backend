@@ -282,7 +282,7 @@ export const deleteProducto = async (req, res) => {
 
 export const reservarProducto = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
     const { cantidad } = req.body;
 
     // 🔒 1. Validaciones básicas
@@ -334,6 +334,7 @@ export const reservarProducto = async (req, res) => {
     res.json(resultado);
 
   } catch (error) {
+    console.error("ERROR RESERVA:", error); // 🔥 IMPORTANTE
     res.status(500).json({
       message: error.message || "Error al reservar producto"
     });
