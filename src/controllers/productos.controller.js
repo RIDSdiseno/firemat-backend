@@ -296,7 +296,7 @@ export const reservarProducto = async (req, res) => {
     const resultado = await prisma.$transaction(async (tx) => {
 
       const producto = await tx.producto.findUnique({
-        where: { id }
+        where: { id: Number(id) }
       });
 
       if (!producto) {
@@ -312,7 +312,7 @@ export const reservarProducto = async (req, res) => {
 
       // 🔥 3. Actualizar reserva
       const actualizado = await tx.producto.update({
-        where: { id },
+        where: { id: Number(id) },
         data: {
           stockReservado: stockReservado + cantidad
         }
@@ -355,7 +355,7 @@ export const confirmarSalida = async (req, res) => {
     const resultado = await prisma.$transaction(async (tx) => {
 
       const producto = await tx.producto.findUnique({
-        where: { id }
+        where: { id: Number(id) }
       });
 
       if (!producto) {
@@ -370,7 +370,7 @@ export const confirmarSalida = async (req, res) => {
 
       // 🔥 1. Actualizar stock real
       const actualizado = await tx.producto.update({
-        where: { id },
+        where: { id: Number(id) },
         data: {
           stock: producto.stock - cantidad,
           stockReservado: stockReservado - cantidad
