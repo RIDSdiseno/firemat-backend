@@ -13,15 +13,17 @@ import { verifyToken } from "../middlewares/auth.js";
 const router = Router();
 
 // 🔥 CRUD Productos
-// 🔐 Todas protegidas (recomendado)
+router.get("/", getProductos); 
 router.get("/", verifyToken, getProductos);
-router.get("/:id", verifyToken, getProducto);
 
-router.post("/", verifyToken, crearProducto);
-router.put("/:id", verifyToken, updateProducto);
-router.delete("/:id", verifyToken, deleteProducto);
+// ANTES: router.post("/", verifyToken, createProducto); 
+// AHORA (Corregido):
+router.post("/", verifyToken, crearProducto); 
 
-// 🔥 NUEVAS FUNCIONALIDADES
+router.get("/:id", getProducto);
+router.post("/", crearProducto); 
+router.put("/:id", updateProducto);
+router.delete("/:id", deleteProducto);
 router.post("/:id/reservar", verifyToken, reservarProducto);
 router.post("/:id/confirmar", verifyToken, confirmarSalida);
 
