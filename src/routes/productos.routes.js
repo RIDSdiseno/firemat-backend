@@ -13,7 +13,7 @@ import { verifyToken } from "../middlewares/auth.js";
 const router = Router();
 
 // 🔥 CRUD Productos
-//router.get("/", getProductos); 
+router.get("/", getProductos); 
 router.get("/", verifyToken, getProductos);
 
 // ANTES: router.post("/", verifyToken, createProducto); 
