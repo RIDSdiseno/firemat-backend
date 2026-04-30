@@ -44,6 +44,7 @@ export const register = async (req, res) => {
 
 // 🔥 LOGIN
 export const login = async (req, res) => {
+  console.log("JWT_SECRET VERIFY:", process.env.JWT_SECRET);
   try {
     const { email, password } = req.body;
 
@@ -85,5 +86,5 @@ export const login = async (req, res) => {
     console.error("LOGIN ERROR:", error);
     return res.status(500).json({ message: "Error en login" });
   }
-  console.log("JWT_SECRET VERIFY:", process.env.JWT_SECRET);
+  
 };
