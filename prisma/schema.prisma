@@ -42,7 +42,7 @@ model Producto {
 model Movimiento {
   id            Int      @id @default(autoincrement())
   productoId    Int
-  userId        String
+  userId        Int?
   producto      Producto @relation(fields: [productoId], references: [id])
   tipo          String
   cantidad      Int
