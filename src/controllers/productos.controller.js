@@ -343,7 +343,7 @@ export const reservarProducto = async (req, res) => {
 
 export const confirmarSalida = async (req, res) => {
   try {
-    const { id } = req.params;
+    const id = Number(req.params.id);
     const { cantidad } = req.body;
 
     if (!cantidad || cantidad <= 0) {
@@ -355,7 +355,7 @@ export const confirmarSalida = async (req, res) => {
     const resultado = await prisma.$transaction(async (tx) => {
 
       const producto = await tx.producto.findUnique({
-        where: { id: Number(id) }
+        where: { id }
       });
 
       if (!producto) {
@@ -368,24 +368,25 @@ export const confirmarSalida = async (req, res) => {
         throw new Error("No hay suficiente stock reservado");
       }
 
-      // 🔥 1. Actualizar stock real
+      const stockAnterior = producto.stock;
+
+      // 🔥 actualizar stock real y reservado
       const actualizado = await tx.producto.update({
-        where: { id: Number(id) },
+        where: { id },
         data: {
           stock: producto.stock - cantidad,
           stockReservado: stockReservado - cantidad
         }
       });
 
-      // 🔥 2. Movimiento
+      // 🔥 registrar movimiento
       await tx.movimiento.create({
         data: {
           tipo: "SALIDA",
           cantidad,
           productoId: id,
-          userId: 1,
-          stockAnterior: producto.stock,
-          stockNuevo: producto.stock - cantidad,
+          stockAnterior: stockAnterior,
+          stockNuevo: stockAnterior - cantidad
         }
       });
 
@@ -395,6 +396,7 @@ export const confirmarSalida = async (req, res) => {
     res.json(resultado);
 
   } catch (error) {
+    console.error("ERROR SALIDA:", error);
     res.status(500).json({
       message: error.message || "Error al confirmar salida"
     });
