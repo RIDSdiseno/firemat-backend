@@ -310,8 +310,6 @@ export const reservarProducto = async (req, res) => {
       }
 
       const stockAnterior = producto.stock;
-      const cantidadNum = Number(cantidad);
-      const stockReservado = producto.stockReservado || 0;
 
       const actualizado = await tx.producto.update({
         where: { id },
@@ -329,9 +327,6 @@ export const reservarProducto = async (req, res) => {
           stockNuevo: stockReservado + cantidad,
           documento: documento || null,
           motivo: motivo || null,
-          producto: {
-            connect: { id }
-          }
         }
       });
 
