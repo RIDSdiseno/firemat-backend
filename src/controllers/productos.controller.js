@@ -323,7 +323,6 @@ export const reservarProducto = async (req, res) => {
           tipo: "RESERVA",
           cantidad,
           productoId: id,
-          userId: req.user.id,
           stockAnterior: stockAnterior,
           stockNuevo: stockAnterior,
           motivo: motivo || null,
@@ -452,7 +451,6 @@ export const cancelarReserva = async (req, res) => {
           tipo: "CANCELACION",
           cantidad,
           productoId: id,
-          userId: null,
           stockAnterior,
           stockNuevo,
           motivo: "Cancelación de reserva"
