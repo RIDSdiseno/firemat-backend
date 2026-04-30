@@ -5,7 +5,7 @@ export const productoSchema = z.object({
   categoriaId: z.union([z.string(), z.number()]),
   stock: z.number().int().nonnegative("Stock inválido"),
   minStock: z.number().int().nonnegative().optional(),
-  precio: z.number().positive("Precio inválido"),
+  precio: z.number().nonnegative("Precio inválido"),
   descripcion: z.string().optional(),
   ubicacion: z.string().optional(),
   activo: z.boolean().optional(),
