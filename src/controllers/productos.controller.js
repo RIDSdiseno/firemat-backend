@@ -325,8 +325,8 @@ export const reservarProducto = async (req, res) => {
           productoId: id,
           stockAnterior: producto.stockAnterior,
           stockNuevo: producto.stockAnterior + cantidad,
-          motivo: motivo || null,
           documento: documento || null,
+          motivo: motivo || null,
         }
       });
 
@@ -388,7 +388,9 @@ export const confirmarSalida = async (req, res) => {
           cantidad,
           productoId: id,
           stock: producto.stock - cantidad,
-          stockReservado: stockReservado - cantidad
+          stockReservado: stockReservado - cantidad,
+          documento: documento || null,
+          motivo: motivo || null,
         }
       });
 
@@ -448,7 +450,8 @@ export const cancelarReserva = async (req, res) => {
           productoId: id,
           stockAnterior: stockReservado,
           stockNuevo: stockReservado - cantidad,
-          motivo: "Cancelación de reserva"
+          documento: documento || null,
+          motivo: "Cancelación de reserva",
         }
       });
 
