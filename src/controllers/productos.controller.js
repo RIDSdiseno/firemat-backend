@@ -120,6 +120,7 @@ export const crearProducto = async (req, res) => {
     });
 
     if (!parsed.success) {
+      console.log("ERROR ZOD:", parsed.errors);
       return res.status(400).json({
         error: parsed.error.errors
       });
