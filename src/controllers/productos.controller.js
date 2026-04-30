@@ -386,7 +386,7 @@ export const confirmarSalida = async (req, res) => {
           cantidad,
           productoId: id,
           stockAnterior: stockAnterior,
-          stockNuevo: stockAnterior,
+          stockNuevo: stockAnterior - cantidad
         }
       });
 
