@@ -405,3 +405,62 @@ export const confirmarSalida = async (req, res) => {
     });
   }
 };
+
+export const cancelarReserva = async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { cantidad } = req.body;
+
+    // 🔒 Validación
+    if (!cantidad || cantidad <= 0) {
+      return res.status(400).json({
+        message: "Cantidad inválida"
+      });
+    }
+
+    const resultado = await prisma.$transaction(async (tx) => {
+
+      const producto = await tx.producto.findUnique({
+        where: { id }
+      });
+
+      if (!producto) {
+        throw new Error("Producto no encontrado");
+      }
+
+      const stockReservado = producto.stockReservado || 0;
+
+      if (cantidad > stockReservado) {
+        throw new Error("No puedes cancelar más de lo reservado");
+      }
+
+      // 🔥 1. Actualizar reserva
+      const actualizado = await tx.producto.update({
+        where: { id },
+        data: {
+          stockReservado: stockReservado - cantidad
+        }
+      });
+
+      // 🔥 2. Crear movimiento
+      await tx.movimiento.create({
+        data: {
+          tipo: "CANCELACION",
+          cantidad,
+          productoId: id,
+          userId: req.user.userId
+        }
+      });
+
+      return actualizado;
+    });
+
+    res.json(resultado);
+
+  } catch (error) {
+    console.error("ERROR CANCELAR:", error);
+    res.status(500).json({
+      message: error.message || "Error al cancelar reserva"
+    });
+  }
+};

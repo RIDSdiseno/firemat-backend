@@ -6,7 +6,8 @@ import {
   updateProducto,
   deleteProducto,
   reservarProducto,
-  confirmarSalida
+  confirmarSalida,
+  cancelarReserva
 } from "../controllers/productos.controller.js";
 import { verifyToken } from "../middlewares/auth.js";
 
@@ -23,5 +24,6 @@ router.delete("/:id", verifyToken, deleteProducto);
 // 🔥 NUEVAS FUNCIONALIDADES
 router.post("/:id/reservar", verifyToken, reservarProducto);
 router.post("/:id/confirmar-salida", verifyToken, confirmarSalida);
+router.post("/:id/cancelar", verifyToken, cancelarReserva);
 
 export default router;
