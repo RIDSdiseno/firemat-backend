@@ -53,7 +53,7 @@ model Movimiento {
   createdAt     DateTime @default(now())
 }
 
-model user {
+model User {
   id            String   @id @default(uuid())
   email         String   @unique
   password      String   
