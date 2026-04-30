@@ -434,16 +434,17 @@ export const cancelarReserva = async (req, res) => {
         throw new Error("No puedes cancelar más de lo reservado");
       }
 
+      // DEFINIR VARIABLES
+      const stockAnterior = stockReservado;
+      const stockNuevo = stockReservado - cantidad;
+
       // 🔥 1. Actualizar reserva
       const actualizado = await tx.producto.update({
         where: { id },
         data: {
-          stockReservado: stockReservado - cantidad
+          stockReservado: stockNuevo
         }
       });
-
-      const stockAnteior = stockReservado;
-      const stockNuevo = stockAnteior - cantidad;
 
       // 🔥 2. Crear movimiento
       await tx.movimiento.create({
