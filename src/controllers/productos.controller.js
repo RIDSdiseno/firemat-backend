@@ -442,13 +442,19 @@ export const cancelarReserva = async (req, res) => {
         }
       });
 
+      const stockAnteior = stockReservado;
+      const stockNuevo = stockAnteior - cantidad;
+
       // 🔥 2. Crear movimiento
       await tx.movimiento.create({
         data: {
           tipo: "CANCELACION",
           cantidad,
           productoId: id,
-          userId: req.user.userId
+          userId: req.user.userId,
+          stockAnterior,
+          stockNuevo,
+          motivo: "Cancelación de reserva"
         }
       });
 
