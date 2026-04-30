@@ -284,7 +284,7 @@ export const deleteProducto = async (req, res) => {
 export const reservarProducto = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { cantidad } = req.body;
+    const { cantidad, motivo, documento } = req.body;
 
     if (!cantidad || cantidad <= 0) {
       return res.status(400).json({
@@ -326,6 +326,8 @@ export const reservarProducto = async (req, res) => {
           userId: req.user.id,
           stockAnterior: stockAnterior,
           stockNuevo: stockAnterior,
+          motivo: motivo || null,
+          documento: documento || null,
         }
       });
 
