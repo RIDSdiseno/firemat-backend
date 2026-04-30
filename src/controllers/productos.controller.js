@@ -346,7 +346,7 @@ export const reservarProducto = async (req, res) => {
 export const confirmarSalida = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { cantidad } = req.body;
+    const { cantidad, motivo, documento } = req.body;
 
     if (!cantidad || cantidad <= 0) {
       return res.status(400).json({
@@ -389,8 +389,8 @@ export const confirmarSalida = async (req, res) => {
           productoId: id,
           stock: producto.stock - cantidad,
           stockReservado: stockReservado - cantidad,
-          documento: documento,
-          motivo: motivo,
+          documento: documento || null,
+          motivo: motivo || null,
         }
       });
 
@@ -410,7 +410,7 @@ export const confirmarSalida = async (req, res) => {
 export const cancelarReserva = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { cantidad } = req.body;
+    const { cantidad, motivo, documento } = req.body;
 
     if (!cantidad || cantidad <= 0) {
       return res.status(400).json({
