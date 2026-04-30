@@ -323,7 +323,7 @@ export const reservarProducto = async (req, res) => {
           tipo: "RESERVA",
           cantidad,
           productoId: id,
-          stockAnterior: stockReservado,
+          stockAnterior: producto.stockAnterior,
           stockNuevo: producto.stockAnterior + cantidad,
           documento: documento || null,
           motivo: motivo || null,
