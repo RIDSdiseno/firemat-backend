@@ -22,6 +22,6 @@ router.delete("/:id", verifyToken, deleteProducto);
 
 // 🔥 NUEVAS FUNCIONALIDADES
 router.post("/:id/reservar", verifyToken, reservarProducto);
-router.post("/:id/confirmar", verifyToken, confirmarSalida);
+router.post("/:id/confirmar-salida", verifyToken, confirmarSalida);
 
 export default router;
