@@ -410,7 +410,6 @@ export const cancelarReserva = async (req, res) => {
     const id = Number(req.params.id);
     const { cantidad } = req.body;
 
-    // 🔒 Validación
     if (!cantidad || cantidad <= 0) {
       return res.status(400).json({
         message: "Cantidad inválida"
@@ -433,26 +432,22 @@ export const cancelarReserva = async (req, res) => {
         throw new Error("No puedes cancelar más de lo reservado");
       }
 
-      // DEFINIR VARIABLES
-      const stockAnterior = stockReservado;
-      const stockNuevo = stockReservado - cantidad;
+      const nuevoReservado = stockReservado - cantidad;
 
-      // 🔥 1. Actualizar reserva
       const actualizado = await tx.producto.update({
         where: { id },
         data: {
-          stockReservado: stockNuevo
+          stockReservado: nuevoReservado
         }
       });
 
-      // 🔥 2. Crear movimiento
       await tx.movimiento.create({
         data: {
           tipo: "CANCELACION",
           cantidad,
           productoId: id,
-          stockAnterior,
-          stockNuevo,
+          stockAnterior: producto.stock,
+          stockNuevo: producto.stock,
           motivo: "Cancelación de reserva"
         }
       });
