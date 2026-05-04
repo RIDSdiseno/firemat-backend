@@ -365,15 +365,16 @@ export const confirmarSalida = async (req, res) => {
         throw new Error("Producto no encontrado");
       }
 
-      const stockReservado = producto.stockReservado || 0;
+      const stockAnterior = Number(producto.stock) || 0;
+      const stockReservado = Number(producto.stockReservado) || 0;
 
       if (cantidadNum > stockReservado) {
         throw new Error("No hay suficiente stock reservado");
       }
 
-      const stockAnterior = producto.stock;
       const stockNuevo = stockAnterior - cantidadNum;
 
+      // 🔥 actualizar producto
       const actualizado = await tx.producto.update({
         where: { id },
         data: {
@@ -382,15 +383,16 @@ export const confirmarSalida = async (req, res) => {
         }
       });
 
+      // 🔥 crear movimiento (SIN NULLS RAROS)
       await tx.movimiento.create({
         data: {
           tipo: "SALIDA",
           cantidad: cantidadNum,
           productoId: id,
-          stockAnterior,
-          stockNuevo,
-          documento: documento || null,
-          motivo: motivo || null,
+          stockAnterior: stockAnterior,
+          stockNuevo: stockNuevo,
+          motivo: motivo || "",
+          documento: documento || "",
         }
       });
 
@@ -400,9 +402,10 @@ export const confirmarSalida = async (req, res) => {
     res.json(resultado);
 
   } catch (error) {
-    console.error("ERROR SALIDA:", error);
+    console.error("ERROR REAL:", error);
+
     res.status(500).json({
-      message: error.message || "Error al confirmar salida"
+      message: error.message
     });
   }
 };
