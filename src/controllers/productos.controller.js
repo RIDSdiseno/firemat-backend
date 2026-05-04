@@ -323,8 +323,8 @@ export const reservarProducto = async (req, res) => {
           tipo: "RESERVA",
           cantidad,
           productoId: id,
-          stockAnterior: stockReservado,
-          stockNuevo: stockReservado + cantidad,
+          stockAnterior,
+          stockNuevo: stockAnterior,
           documento: documento || null,
           motivo: motivo || null,
         }
@@ -387,8 +387,8 @@ export const confirmarSalida = async (req, res) => {
           tipo: "SALIDA",
           cantidad,
           productoId: id,
-          stockAnterior: stockAnterior,
-          stockNuevo: stockAnterior - cantidad,
+          stockAnterior,
+          stockNuevo: stockAnterior,
           documento: documento || null,
           motivo: motivo || null,
         }
