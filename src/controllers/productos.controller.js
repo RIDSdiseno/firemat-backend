@@ -346,9 +346,10 @@ export const reservarProducto = async (req, res) => {
 export const confirmarSalida = async (req, res) => {
   try {
     const id = Number(req.params.id);
-    const { cantidad, motivo, documento } = req.body;
+    const cantidadNum = Number(req.body.cantidad);
+    const { motivo, documento } = req.body;
 
-    if (!cantidad || cantidad <= 0) {
+    if (!cantidadNum || cantidadNum <= 0) {
       return res.status(400).json({
         message: "Cantidad inválida"
       });
@@ -366,29 +367,28 @@ export const confirmarSalida = async (req, res) => {
 
       const stockReservado = producto.stockReservado || 0;
 
-      if (cantidad > stockReservado) {
+      if (cantidadNum > stockReservado) {
         throw new Error("No hay suficiente stock reservado");
       }
 
       const stockAnterior = producto.stock;
+      const stockNuevo = stockAnterior - cantidadNum;
 
-      // 🔥 actualizar stock real y reservado
       const actualizado = await tx.producto.update({
         where: { id },
         data: {
-          stock: producto.stock - cantidad,
-          stockReservado: stockReservado - cantidad
+          stock: stockNuevo,
+          stockReservado: stockReservado - cantidadNum
         }
       });
 
-      // 🔥 registrar movimiento
       await tx.movimiento.create({
         data: {
           tipo: "SALIDA",
-          cantidad,
+          cantidad: cantidadNum,
           productoId: id,
           stockAnterior,
-          stockNuevo: stockAnterior,
+          stockNuevo,
           documento: documento || null,
           motivo: motivo || null,
         }
