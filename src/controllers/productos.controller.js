@@ -389,10 +389,10 @@ export const confirmarSalida = async (req, res) => {
           tipo: "SALIDA",
           cantidad: cantidadNum,
           productoId: id,
-          stockAnterior: stockAnterior,
-          stockNuevo: stockNuevo,
-          motivo: motivo || "",
-          documento: documento || "",
+          stockAnterior,
+          stockNuevo,
+          motivo: motivo ?? null,
+          documento: documento ?? null,
         }
       });
 
