@@ -393,6 +393,10 @@ export const confirmarSalida = async (req, res) => {
           stockNuevo,
           motivo: motivo ?? null,
           documento: documento ?? null,
+
+          producto: {
+            connect: { id }
+          }
         }
       });
 
