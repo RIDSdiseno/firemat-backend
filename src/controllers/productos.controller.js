@@ -388,7 +388,7 @@ export const confirmarSalida = async (req, res) => {
           cantidad,
           productoId: id,
           stockAnterior: stockAnterior,
-          stockNuevo: producto.stock - cantidad,
+          stockNuevo: stockAnterior - cantidad,
           documento: documento || null,
           motivo: motivo || null,
         }
