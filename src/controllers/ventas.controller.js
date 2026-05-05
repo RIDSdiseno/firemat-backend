@@ -43,9 +43,7 @@ export const crearVenta = async (req, res) => {
         fechaProximaAccion: new Date(),
 
         // 👇 RELACIÓN (SEPARADA)
-        producto: {
-            connect: { id: Number(productoId) }
-        }
+        productoId: Number(productoId)
     },
 });
 
