@@ -51,6 +51,8 @@ export const getProductos = async (req, res) => {
       nombre: typeof p.nombre === "string" ? p.nombre : "",
       stock: Number(p.stock) || 0,
       minStock: Number(p.minStock) || 0,
+      stockReservado: Number(p.stockReservado) || 0,
+      disponible: (Number(p.stock) || 0) - (Number(p.stockReservado) || 0),
       precio: Number(p.precio) || 0,
       ubicacion: typeof p.ubicacion === "string" ? p.ubicacion : "",
       activo: !!p.activo,
