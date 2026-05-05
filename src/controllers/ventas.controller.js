@@ -8,20 +8,38 @@ export const crearVenta = async (req, res) => {
       return res.status(400).json({ message: "Datos incompletos" });
     }
 
+    const producto = await prisma.producto.findUnique({
+        where: { id: Number(productoId) }
+    });
+
+    if (!producto) {
+        return res.status(404).json({
+            message: "Producto no existe"
+        });
+    }
+
     const total = cantidad * precio;
 
     const venta = await prisma.venta.create({
-      data: {
+        data: {
         cliente,
         cantidad: Number(cantidad),
         precio: Number(precio),
         total,
         estado: "PROSPECTO",
+
+        // 👇 CAMPOS DE VENTA (AFUERA)
+        origen: "Manual",
+        responsable: "Sin asignar",
+        proximaAccion: "Contactar cliente",
+        fechaProximaAccion: new Date(),
+
+        // 👇 RELACIÓN (SEPARADA)
         producto: {
             connect: { id: Number(productoId) }
-        },
-      },
-    });
+        }
+    },
+});
 
     res.status(201).json(venta);
 
@@ -58,6 +76,12 @@ export const cambiarEstadoVenta = async (req, res) => {
 
     if (!venta) {
       return res.status(404).json({ message: "Venta no encontrada" });
+    }
+
+    if (!venta.proximaAccion || !venta.fechaProximaAccion) {
+        return res.status(400).json({
+            message: "La venta no tiene proxima acción definida"
+        });
     }
 
     // 🔥 TRANSACCIÓN
@@ -99,9 +123,9 @@ export const cambiarEstadoVenta = async (req, res) => {
             stockAnterior: producto.stock,
             stockNuevo: producto.stock,
             motivo: "Reserva por venta"
-          }
+            }
         });
-      }
+        }
 
       // 👉 DESCUENTO REAL
       if (estado === "GANADA") {
