@@ -10,6 +10,6 @@ const router = express.Router();
 // rutas
 router.post("/", crearVenta);
 router.get("/", getVentas);
-router.put("/:id/estado", cambiarEstadoVenta);
+router.patch("/:id/estado", cambiarEstadoVenta);
 
 export default router;
