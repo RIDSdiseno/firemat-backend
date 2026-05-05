@@ -106,14 +106,3 @@ model VentaDetalle {
   precio   Float
   subtotal Float
 }
-
-model Cliente { 
-  id        Int      @id @default(autoincrement())
-  nombre    String
-  rut       String?  @unique
-  email     String?
-  telefono  String?
-
-  ventas    Venta[]
-  createdAt DateTime @default(now())
-}
