@@ -9,6 +9,7 @@ import categoriasRoutes from "./routes/categorias.routes.js";
 import inventarioRoutes from "./routes/inventario.routes.js";
 import authRoutes from "./routes/auth.routes.js";
 import usersRoutes from "./routes/users.routes.js";
+import ventasRoutes from "./routes/ventas.routes.js";
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -26,6 +27,7 @@ app.use("/api/movimientos", movimientosRoutes);
 app.use("/api/categorias", categoriasRoutes);
 app.use("/api/inventario", inventarioRoutes);
 app.use("/api/users", usersRoutes);
+app.use("/api/ventas", ventasRoutes);
 
 // Ruta raíz
 app.get("/", (req, res) => {
