@@ -1,3 +1,5 @@
+import { prisma } from "../config/db";
+
 export const crearVenta = async (req, res) => {
   try {
     const { cliente, productoId, cantidad, precio } = req.body;
