@@ -37,6 +37,7 @@ model Producto {
   criticidad     String         @default("Media")
   ventas         Venta[]
   VentaDetalle   VentaDetalle[]
+  oportunidades  Oportunidad[]
 
   movimientos Movimiento[]
 }
@@ -71,8 +72,8 @@ model Venta {
   producto   Producto @relation(fields: [productoId], references: [id])
 
   // datos comerciales
-  cliente  String
-  contacto String?
+  clienteId Int
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
 
   cantidad Int
   precio   Float
@@ -82,12 +83,12 @@ model Venta {
   estado String @default("PROSPECTO")
 
   // control comercial
-  responsable String?
-  origen String?       // web, referido, etc
-  probabilidad Float?  // CRM KPI
-  proximaAccion String?
+  responsable        String?
+  origen             String? // web, referido, etc
+  probabilidad       Float? // CRM KPI
+  proximaAccion      String?
   fechaProximaAccion DateTime?
-  fechaCierre DateTime?
+  fechaCierre        DateTime?
 
   createdAt DateTime       @default(now())
   detalles  VentaDetalle[]
@@ -105,4 +106,41 @@ model VentaDetalle {
   cantidad Int
   precio   Float
   subtotal Float
+}
+
+model Cliente {
+  id            Int           @id @default(autoincrement())
+  nombre        String
+  rut           String?       @unique
+  email         String?
+  telefono      String?
+  oportunidades Oportunidad[]
+
+  ventas    Venta[]
+  createdAt DateTime @default(now())
+}
+
+model Oportunidad {
+  id Int @id @default(autoincrement())
+
+  clienteId Int
+  cliente   Cliente @relation(fields: [clienteId], references: [id])
+
+  productoId Int?
+  producto   Producto? @relation(fields: [productoId], references: [id])
+
+  etapa String @default("PROSPECTO")
+
+  montoEstimado Float?
+  probabilidad  Int?
+
+  origen      String?
+  responsable String?
+
+  proximaAccion      String?
+  fechaProximaAccion DateTime?
+
+  estadoFinal String? // GANADA, PERDIDA, POSTERGADA
+
+  createdAt DateTime @default(now())
 }
