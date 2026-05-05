@@ -13,11 +13,13 @@ export const crearVenta = async (req, res) => {
     const venta = await prisma.venta.create({
       data: {
         cliente,
-        productoId: Number(productoId),
         cantidad: Number(cantidad),
         precio: Number(precio),
         total,
         estado: "PROSPECTO",
+        producto: {
+            connect: { id: Number(productoId) }
+        },
       },
     });
 
