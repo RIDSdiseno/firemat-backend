@@ -18,6 +18,14 @@ export const crearVenta = async (req, res) => {
         });
     }
 
+    const disponible = producto.stock - producto.stockReservado;
+
+    if (cantidad > disponible) {
+        return res.status(400).json({
+            message: "No hay stock disponible"
+        });
+    }
+
     const total = cantidad * precio;
 
     const venta = await prisma.venta.create({
