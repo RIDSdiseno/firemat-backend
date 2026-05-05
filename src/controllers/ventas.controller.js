@@ -26,8 +26,8 @@ export const crearVenta = async (req, res) => {
     res.status(201).json(venta);
 
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Error al crear venta" });
+    console.error("ERROR CREAR VENTA:", error); // 👈 IMPORTANTE
+  res.status(500).json({ message: error.message });
   }
 };
 
