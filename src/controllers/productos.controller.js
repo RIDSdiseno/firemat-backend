@@ -56,8 +56,6 @@ export const getProductos = async (req, res) => {
       activo: !!p.activo,
       imagen: typeof p.imagen === "string" ? p.imagen : "",
       criticidad: p.criticidad || "Media",
-
-      // 🔥 CLAVE: SIEMPRE STRING
       categoria: p.categoria?.nombre || "Sin categoría",
       categoriaId: p.categoriaId,
     }));
@@ -302,8 +300,8 @@ export const reservarProducto = async (req, res) => {
         throw new Error("Producto no encontrado");
       }
 
-      //const stockReservado = producto.stockReservado || 0;
-      //const disponible = producto.stock - stockReservado;
+      const stockReservado = producto.stockReservado || 0;
+      const disponible = producto.stock - stockReservado;
 
       if (cantidad > disponible) {
         throw new Error("No hay stock disponible suficiente");

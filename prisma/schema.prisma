@@ -83,6 +83,10 @@ model Venta {
 
   // control comercial
   responsable String?
+  origen String?       // web, referido, etc
+  probabilidad Float?  // CRM KPI
+  proximaAccion String?
+  fechaProximaAccion DateTime?
   fechaCierre DateTime?
 
   createdAt DateTime       @default(now())
