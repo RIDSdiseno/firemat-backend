@@ -8,10 +8,11 @@ export const crearOportunidad = async (req, res) => {
       productoId,
       monto,
       probabilidad,
-      etapa
+      etapa,
+      titulo
     } = req.body;
 
-    if (!clienteId || !productoId || !monto) {
+    if (!clienteId || !productoId || !monto || !titulo) {
       return res.status(400).json({
         message: "Datos incompletos"
       });
@@ -24,7 +25,7 @@ export const crearOportunidad = async (req, res) => {
         monto: Number(monto),
         probabilidad: probabilidad || 50,
         etapa: etapa || "PROSPECTO",
-        titulo,
+        titulo
       },
       include: {
         cliente: true,
