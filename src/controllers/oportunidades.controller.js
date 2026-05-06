@@ -67,7 +67,7 @@ export const cambiarEtapa = async (req, res) => {
     const { etapa } = req.body;
 
     const oportunidad = await prisma.oportunidad.findUnique({
-      where: { id }
+      where: { id },
     });
 
     if (!oportunidad) {
@@ -76,12 +76,49 @@ export const cambiarEtapa = async (req, res) => {
       });
     }
 
-    const updated = await prisma.oportunidad.update({
-      where: { id },
-      data: { etapa }
+    const resultado = await prisma.$transaction(async (tx) => {
+
+      // 1. Actualizar etapa
+      const updated = await tx.oportunidad.update({
+        where: { id },
+        data: { etapa }
+      });
+
+      // 🔥 2. SI SE GANA → CREAR VENTA AUTOMÁTICA
+      if (etapa === "GANADA") {
+
+        // ⚠️ Evitar duplicar ventas
+        const ventaExistente = await tx.venta.findFirst({
+          where: {
+            cliente: oportunidad.cliente.nombre,
+            total: oportunidad.montoEstimado
+          }
+        });
+
+        if (!ventaExistente) {
+
+          await tx.venta.create({
+            data: {
+              cliente: oportunidad.cliente?.nombre || "Cliente sin nombre",
+              productoId: oportunidad.productoId || 1, // 👈 ajustable
+              cantidad: 1, // 👈 puedes mejorar después
+              precio: oportunidad.montoEstimado,
+              total: oportunidad.montoEstimado,
+              estado: "GANADA",
+              origen: "CRM",
+              responsable: "Auto CRM",
+              proximaAccion: "Venta generada automáticamente",
+              fechaProximaAccion: new Date()
+            }
+          });
+
+        }
+      }
+
+      return updated;
     });
 
-    res.json(updated);
+    res.json(resultado);
 
   } catch (error) {
     console.error("ERROR ETAPA:", error);
