@@ -1,8 +1,8 @@
 import express from "express";
 import {
-  crearOportunidad,
-  getOportunidades,
-  cambiarEtapa
+    crearOportunidad,
+    getOportunidades,
+    cambiarEtapa
 } from "../controllers/oportunidades.controller.js";
 
 const router = express.Router();
