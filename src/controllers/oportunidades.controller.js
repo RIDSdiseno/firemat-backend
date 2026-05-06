@@ -129,7 +129,7 @@ export const cambiarEtapa = async (req, res) => {
                 throw new Error("Producto no encontrado");
             }
 
-            const stockNuevo = producto - 1;
+            const stockNuevo = producto.stock - 1;
 
             if (stockNuevo < 0) {
                 throw new Error("Stock insuficiente para venta automatica");
