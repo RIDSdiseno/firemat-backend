@@ -33,7 +33,6 @@ export const crearOportunidad = async (req, res) => {
       },
       include: {
         cliente: true,
-        producto: true
       }
     });
 
