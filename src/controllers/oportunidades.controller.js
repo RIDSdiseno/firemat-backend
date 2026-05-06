@@ -5,7 +5,6 @@ export const crearOportunidad = async (req, res) => {
   try {
     const {
       clienteId,
-      productoId,
       monto,
       probabilidad,
       etapa,
@@ -13,7 +12,7 @@ export const crearOportunidad = async (req, res) => {
       unidadNegocio
     } = req.body;
 
-    if (!clienteId || !productoId || !monto || !titulo || !unidadNegocio) {
+    if (!clienteId || !monto || !titulo || !unidadNegocio) {
       return res.status(400).json({
         message: "Datos incompletos"
       });
@@ -22,9 +21,6 @@ export const crearOportunidad = async (req, res) => {
     const oportunidad = await prisma.oportunidad.create({
       data: {
         clienteId: Number(clienteId),
-        producto: {
-        connect: { id: Number(productoId) }
-        },
         monto: Number(monto),
         probabilidad: probabilidad || 50,
         etapa: etapa || "PROSPECTO",
