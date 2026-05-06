@@ -106,3 +106,39 @@ model VentaDetalle {
   precio   Float
   subtotal Float
 }
+
+model Cliente {
+  id        Int      @id @default(autoincrement())
+  nombre    String
+  rut       String?  @unique
+  email     String?
+  telefono  String?
+  direccion String?
+
+  oportunidades Oportunidad[]
+  createdAt DateTime @default(now())
+}
+
+model Oportunidad {
+  id          Int    @id @default(autoincrement())
+
+  clienteId   Int
+  cliente     Cliente @relation(fields: [clienteId], references: [id])
+
+  titulo      String
+  descripcion String?
+
+  unidadNegocio String // Beck | Firemat | Mixto
+
+  estado      String @default("PROSPECTO")
+  etapa       String @default("PROSPECTO")
+
+  montoEstimado Float?
+
+  proximaAccion String?
+  fechaProximaAccion DateTime?
+
+  probabilidad Int?
+
+  createdAt DateTime @default(now())
+}
