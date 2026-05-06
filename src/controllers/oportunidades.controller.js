@@ -23,7 +23,8 @@ export const crearOportunidad = async (req, res) => {
         productoId: Number(productoId),
         monto: Number(monto),
         probabilidad: probabilidad || 50,
-        etapa: etapa || "PROSPECTO"
+        etapa: etapa || "PROSPECTO",
+        titulo,
       },
       include: {
         cliente: true,
