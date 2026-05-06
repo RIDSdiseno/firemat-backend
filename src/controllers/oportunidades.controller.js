@@ -21,7 +21,7 @@ export const crearOportunidad = async (req, res) => {
     const oportunidad = await prisma.oportunidad.create({
       data: {
         clienteId: Number(clienteId),
-        monto: Number(monto),
+        montoEstimado: Number(monto),
         probabilidad: probabilidad || 50,
         etapa: etapa || "PROSPECTO",
         titulo,
