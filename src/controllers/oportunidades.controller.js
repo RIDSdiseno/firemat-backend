@@ -9,7 +9,8 @@ export const crearOportunidad = async (req, res) => {
       probabilidad,
       etapa,
       titulo,
-      unidadNegocio
+      unidadNegocio,
+      productoId
     } = req.body;
 
     if (!clienteId || !monto || !titulo || !unidadNegocio) {
@@ -21,6 +22,7 @@ export const crearOportunidad = async (req, res) => {
     const oportunidad = await prisma.oportunidad.create({
       data: {
         clienteId: Number(clienteId),
+        productoId: Number(productoId),
         montoEstimado: Number(monto),
         probabilidad: probabilidad || 50,
         etapa: etapa || "PROSPECTO",
@@ -68,6 +70,10 @@ export const cambiarEtapa = async (req, res) => {
 
     const oportunidad = await prisma.oportunidad.findUnique({
       where: { id },
+      include: {
+        cliente: true,
+        producto: true
+      }
     });
 
     if (!oportunidad) {
@@ -86,6 +92,10 @@ export const cambiarEtapa = async (req, res) => {
 
       // 🔥 2. SI SE GANA → CREAR VENTA AUTOMÁTICA
       if (etapa === "GANADA") {
+
+        if (!oportunidad.productoId) {
+            throw new Error("La oportunidad no tiene producto asociado")
+        }
 
         // ⚠️ Evitar duplicar ventas
         const ventaExistente = await tx.venta.findFirst({
