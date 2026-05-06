@@ -107,21 +107,51 @@ export const cambiarEtapa = async (req, res) => {
 
         if (!ventaExistente) {
 
-          await tx.venta.create({
+            await tx.venta.create({
             data: {
-              cliente: oportunidad.cliente?.nombre || "Cliente sin nombre",
-              productoId: oportunidad.productoId || 1, // 👈 ajustable
-              cantidad: 1, // 👈 puedes mejorar después
-              precio: oportunidad.montoEstimado,
-              total: oportunidad.montoEstimado,
-              estado: "GANADA",
-              origen: "CRM",
-              responsable: "Auto CRM",
-              proximaAccion: "Venta generada automáticamente",
-              fechaProximaAccion: new Date()
+                cliente: oportunidad.cliente?.nombre || "Cliente sin nombre",
+                productoId: oportunidad.productoId || 1,
+              cantidad: 1, // 
+                precio: oportunidad.montoEstimado,
+                total: oportunidad.montoEstimado,
+                estado: "GANADA",
+                origen: "CRM",
+                responsable: "Auto CRM",
+                proximaAccion: "Venta generada automáticamente",
+                fechaProximaAccion: new Date()
             }
-          });
+        });
+            const producto = await tx.producto.findUnique({
+                where: { id: oportunidad.productoId }
+            });
 
+            if (!producto) {
+                throw new Error("Producto no encontrado");
+            }
+
+            const stockNuevo = producto - 1;
+
+            if (stockNuevo < 0) {
+                throw new Error("Stock insuficiente para venta automatica");
+            }
+
+            await tx.producto.update({
+                where: { id: oportunidad.productoId },
+                data: {
+                    stock: stockNuevo
+                }
+            });
+
+            await tx.movimiento.create({
+                data: { 
+                    tipo: "SALIDA",
+                    cantidad: 1,
+                    productoId: oportunidad.productoId,
+                    stockAnterior: producto.stock,
+                    stockNuevo,
+                    motivo: "Venta automatica desde CRM"
+                }
+            });
         }
       }
 
