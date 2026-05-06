@@ -110,8 +110,8 @@ export const cambiarEtapa = async (req, res) => {
             await tx.venta.create({
             data: {
                 cliente: oportunidad.cliente?.nombre || "Cliente sin nombre",
-                productoId: oportunidad.productoId || 1,
-              cantidad: 1, // 
+                productoId: oportunidad.productoId,
+                cantidad: oportunidad.cantidad || 1, // 
                 precio: oportunidad.montoEstimado,
                 total: oportunidad.montoEstimado,
                 estado: "GANADA",
