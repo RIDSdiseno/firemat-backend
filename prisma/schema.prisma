@@ -37,8 +37,8 @@ model Producto {
   criticidad     String         @default("Media")
   ventas         Venta[]
   VentaDetalle   VentaDetalle[]
-
-  movimientos Movimiento[]
+  oportunidades  Oportunidad[]
+  movimientos    Movimiento[]
 }
 
 model Movimiento {
@@ -82,12 +82,12 @@ model Venta {
   estado String @default("PROSPECTO")
 
   // control comercial
-  responsable String?
-  origen String?       // web, referido, etc
-  probabilidad Float?  // CRM KPI
-  proximaAccion String?
+  responsable        String?
+  origen             String? // web, referido, etc
+  probabilidad       Float? // CRM KPI
+  proximaAccion      String?
   fechaProximaAccion DateTime?
-  fechaCierre DateTime?
+  fechaCierre        DateTime?
 
   createdAt DateTime       @default(now())
   detalles  VentaDetalle[]
@@ -108,34 +108,36 @@ model VentaDetalle {
 }
 
 model Cliente {
-  id        Int      @id @default(autoincrement())
+  id        Int     @id @default(autoincrement())
   nombre    String
-  rut       String?  @unique
+  rut       String? @unique
   email     String?
   telefono  String?
   direccion String?
 
   oportunidades Oportunidad[]
-  createdAt DateTime @default(now())
+  createdAt     DateTime      @default(now())
 }
 
 model Oportunidad {
-  id          Int    @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
-  clienteId   Int
-  cliente     Cliente @relation(fields: [clienteId], references: [id])
+  clienteId  Int
+  cliente    Cliente   @relation(fields: [clienteId], references: [id])
+  productoId Int?
+  producto   Producto? @relation(fields: [productoId], references: [id])
 
   titulo      String
   descripcion String?
 
   unidadNegocio String // Beck | Firemat | Mixto
 
-  estado      String @default("PROSPECTO")
-  etapa       String @default("PROSPECTO")
+  estado String @default("PROSPECTO")
+  etapa  String @default("PROSPECTO")
 
   montoEstimado Float?
 
-  proximaAccion String?
+  proximaAccion      String?
   fechaProximaAccion DateTime?
 
   probabilidad Int?
