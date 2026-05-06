@@ -111,7 +111,7 @@ export const cambiarEtapa = async (req, res) => {
             data: {
                 cliente: oportunidad.cliente?.nombre || "Cliente sin nombre",
                 productoId: oportunidad.productoId,
-                cantidad: oportunidad.cantidad || 1, // 
+                cantidad: 1,  
                 precio: oportunidad.montoEstimado,
                 total: oportunidad.montoEstimado,
                 estado: "GANADA",
@@ -129,7 +129,8 @@ export const cambiarEtapa = async (req, res) => {
                 throw new Error("Producto no encontrado");
             }
 
-            const stockNuevo = producto.stock - 1;
+            const cantidad = 1;
+            const stockNuevo = producto.stock - cantidad;
 
             if (stockNuevo < 0) {
                 throw new Error("Stock insuficiente para venta automatica");
@@ -145,7 +146,7 @@ export const cambiarEtapa = async (req, res) => {
             await tx.movimiento.create({
                 data: { 
                     tipo: "SALIDA",
-                    cantidad: 1,
+                    cantidad: cantidad,
                     productoId: oportunidad.productoId,
                     stockAnterior: producto.stock,
                     stockNuevo,
