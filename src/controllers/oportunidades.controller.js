@@ -163,3 +163,35 @@ export const cambiarEtapa = async (req, res) => {
     res.status(500).json({ message: error.message });
 }
 };
+
+export const eliminarOportunidad = async (req, res) => {
+  try {
+
+    const id = Number(req.params.id);
+
+    const oportunidad = await prisma.oportunidad.findUnique({
+      where: { id }
+    });
+
+    if (!oportunidad) {
+      return res.status(404).json({
+        message: "Oportunidad no encontrada"
+      });
+    }
+
+    await prisma.oportunidad.delete({
+      where: { id }
+    });
+
+    res.json({
+      message: "Oportunidad eliminada"
+    });
+
+  } catch (error) {
+    console.error("ERROR ELIMINAR:", error);
+
+    res.status(500).json({
+      message: error.message
+    });
+  }
+};
