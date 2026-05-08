@@ -68,10 +68,21 @@ export const crearCotizacion = async (req, res) => {
 
     const {
       cliente,
-      contacto,
-      responsable,
-      observaciones,
-      productos
+  contacto,
+  tipoCliente,
+  responsable,
+  estado,
+  descuento,
+  fechaVencimiento,
+  fechaSeguimiento,
+  probabilidadCierre,
+  comentariosCliente,
+  objeciones,
+  observaciones,
+  motivoPerdida,
+  motivoPostergacion,
+  fechaReactivacion,
+  productos
     } = req.body;
 
     if (!cliente || !productos || productos.length === 0) {
@@ -131,28 +142,68 @@ export const crearCotizacion = async (req, res) => {
     // 🔥 crear cotizacion + detalles
     const cotizacion =
       await prisma.cotizacionFiremat.create({
-        data: {
-          numero,
-          cliente,
-          contacto,
-          responsable,
-          observaciones,
-          subtotal,
-          impuesto,
-          total,
+  data: {
+    numero,
 
-          CotizacionFirematDetalle: {
-            create: detalles
-          }
-        },
-        include: {
-          CotizacionFirematDetalle: {
-            include: {
-              Producto: true
-            }
-          }
-        }
-      });
+    cliente,
+    contacto,
+    tipoCliente,
+
+    responsable,
+
+    estado: estado || "BORRADOR",
+
+    subtotal,
+
+    descuento: descuento || 0,
+
+    impuesto,
+
+    total:
+      subtotal -
+      (descuento || 0) +
+      impuesto,
+
+    fechaVencimiento:
+      fechaVencimiento
+        ? new Date(fechaVencimiento)
+        : null,
+
+    fechaSeguimiento:
+      fechaSeguimiento
+        ? new Date(fechaSeguimiento)
+        : null,
+
+    probabilidadCierre,
+
+    comentariosCliente,
+
+    objeciones,
+
+    observaciones,
+
+    motivoPerdida,
+
+    motivoPostergacion,
+
+    fechaReactivacion:
+      fechaReactivacion
+        ? new Date(fechaReactivacion)
+        : null,
+
+    CotizacionFirematDetalle: {
+      create: detalles
+    }
+  },
+
+  include: {
+    CotizacionFirematDetalle: {
+      include: {
+        Producto: true
+      }
+    }
+  }
+});
 
     res.status(201).json(cotizacion);
 
