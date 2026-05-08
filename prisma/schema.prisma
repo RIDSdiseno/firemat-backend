@@ -120,7 +120,7 @@ model Oportunidad {
 
 model CotizacionFiremat {
   id                       Int                        @id @default(autoincrement())
-  numero                   String                     @unique
+  numero                   String?                    @unique
   cliente                  String
   contacto                 String?
   tipoCliente              String?
