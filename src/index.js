@@ -11,7 +11,6 @@ import authRoutes from "./routes/auth.routes.js";
 import usersRoutes from "./routes/users.routes.js";
 import ventasRoutes from "./routes/ventas.routes.js";
 import clientesRoutes from "./routes/clientes.routes.js"
-import oportunidadesRoutes from "./routes/oportunidades.routes.js";
 import cotizacionFirematRoutes from "./routes/cotizacionFiremat.routes.js"
 
 const app = express();
@@ -32,7 +31,6 @@ app.use("/api/inventario", inventarioRoutes);
 app.use("/api/users", usersRoutes);
 app.use("/api/ventas", ventasRoutes);
 app.use("/api/clientes", clientesRoutes);
-app.use("/api/oportunidades", oportunidadesRoutes);
 app.use("/api/cotizaciones-firemat", cotizacionFirematRoutes);
 
 // Ruta raíz
